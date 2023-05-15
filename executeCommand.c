@@ -9,6 +9,7 @@ void executeCommand(char *input)
 {
 	char *args[64]; /* Maximum 64 arguments */
 	int status;
+	pid_t pid = fork(); /* Fork a child process */
 
 	/* Tokenize input */
 	char *token = strtok(input, " ");
@@ -21,9 +22,6 @@ void executeCommand(char *input)
 		i++;
 	}
 	args[i] = NULL; /* Set the last argument to NULL */
-
-	/* Fork a child process */
-	pid_t pid = fork();
 
 	if (pid == 0)
 	{
