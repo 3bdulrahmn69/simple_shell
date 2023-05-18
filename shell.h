@@ -19,6 +19,6 @@
 			/* Prototypes */
 void readInput(char *input);
 void executeCommand(char *input);
-
+ssize_t my_getline(char **pline, size_t *num, FILE *streem);
 
 #endif /* SHELL_H */
