@@ -1,19 +1,19 @@
 #include "shell.h"
 
 /**
- * my_getline - function that read input like getline
- * @pline: pointer to a pointer to a character
- * @num:  pointer to a size_t
- * @streem: file stream from which
+ * my_getline - function that read string input like getline
+ * @pline: pointer to a pointer to a character of pline
+ * @num:  pointer to a size_t of chars
+ * @stream: file stream from which 
  * Return: number of characters read
  */
-ssize_t my_getline(char **pline, size_t *num, FILE *streem)
+ssize_t my_getline(char **pline, size_t *num, FILE *stream)
 {
 	ssize_t bytesRead = 0;
 	size_t bufferSize = 0;
 	int c;
 
-	if (pline == NULL || num == NULL || streem == NULL)
+	if (pline == NULL || num == NULL || stream == NULL)
 		return (-1); /* invalid arguments */
 	/* initial buffer if necessary */
 	if (*pline == NULL || *num == 0)
@@ -24,7 +24,7 @@ ssize_t my_getline(char **pline, size_t *num, FILE *streem)
 			return (-1); /* Memory allocation error */
 	}
 	/* Read characters until a newline or EOF is encountered */
-	while ((c = fgetc(streem)) != '\n' && c != EOF)
+	while ((c = fgetc(stream)) != '\n' && c != EOF)
 	{
 		if (bytesRead + 1 >= *num)
 		{
