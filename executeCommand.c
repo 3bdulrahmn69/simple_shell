@@ -1,58 +1,47 @@
 #include "shell.h"
-
 /**
- * executeCommand - function that execute the code
- * @input: user input
- * Return: void
+ * execute - execute a command with its entire path variables.
+ * @data: a pointer to the program's data
+ * Return: If sucess returns zero, otherwise, return -1.
  */
-void executeCommand(char *input)
+int execute(data_of_program *data)
 {
-	char *args[64]; /* Maximum 64 arguments */
-	int status;
-	pid_t pid = fork(); /* Fork a child process */
+	int retval = 0, status;
+	pid_t pidd;
 
-	/* Tokenize input */
-	char *token = strtok(input, " ");
-	int i = 0;
+	/* check for program in built ins */
+	retval = builtins_list(data);
+	if (retval != -1)/* if program was found in built ins */
+		return (retval);
 
-	while (token)
-	{
-		args[i] = token;
-		token = strtok(NULL, " ");
-		i++;
+	/* check for program file system */
+	retval = find_program(data);
+	if (retval)
+	{/* if program not found */
+		return (retval);
 	}
-	args[i] = NULL; /* Set the last argument to NULL */
-
-	if (pid == 0)
-	{
-		/* Child process */
-		if (strcmp(args[0], "exit") == 0)
-			exit(EXIT_SUCCESS);
-		else if (strcmp(args[0], "env") == 0)
-		{
-			extern char **environ;
-			char **env = environ;
-			while (*env)
-			{
-				printf("%s\n", *env);
-				env++;
-			}
-			exit(EXIT_SUCCESS);
+	else
+	{/* if program was found */
+		pidd = fork(); /* create a child process */
+		if (pidd == -1)
+		{ /* if the fork call failed */
+			perror(data->command_name);
+			exit(EXIT_FAILURE);
+		}
+		if (pidd == 0)
+		{/* I am the child process, I execute the program*/
+			retval = execve(data->tokens[0], data->tokens, data->env);
+			if (retval == -1) /* if error when execve*/
+				perror(data->command_name), exit(EXIT_FAILURE);
 		}
 		else
-		{
-			/* Execute the command */
-			if (execvp(args[0], args) == -1)
-			{
-				perror("execvp error");
-				exit(EXIT_FAILURE);
-			}
+		{/* I am the father, I wait and check the exit status of the child */
+			wait(&status);
+			if (WIFEXITED(status))
+				errno = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+				errno = 128 + WTERMSIG(status);
 		}
 	}
-	else if (pid < 0)
-		/* Forking failed */
-		perror("fork error");
-	else
-		/* Parent process */
-		waitpid(pid, &status, 0);
+	return (0);
 }
