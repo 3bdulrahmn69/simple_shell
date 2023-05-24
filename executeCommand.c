@@ -26,9 +26,28 @@ void executeCommand(char *input)
 	if (pid == 0)
 	{
 		/* Child process */
-		if (execvp(args[0], args) == -1)
-			perror("execvp error");
-		exit(EXIT_FAILURE);
+		if (strcmp(args[0], "exit") == 0)
+			exit(EXIT_SUCCESS);
+		else if (strcmp(args[0], "env") == 0)
+		{
+			extern char **environ;
+			char **env = environ;
+			while (*env)
+			{
+				printf("%s\n", *env);
+				env++;
+			}
+			exit(EXIT_SUCCESS);
+		}
+		else
+		{
+			/* Execute the command */
+			if (execvp(args[0], args) == -1)
+			{
+				perror("execvp error");
+				exit(EXIT_FAILURE);
+			}
+		}
 	}
 	else if (pid < 0)
 		/* Forking failed */

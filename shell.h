@@ -15,6 +15,8 @@
 
 			/* Buffers */
 #define MAX_INPUT_LENGTH 1024
+#define MAX_COMMAND_LENGTH 100
+#define MAX_ARGUMENTS 64
 
 			/* Prototypes */
 void readInput(char *input);

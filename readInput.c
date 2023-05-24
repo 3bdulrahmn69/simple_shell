@@ -9,7 +9,7 @@
 void readInput(char *input)
 {
 	if (isatty(STDIN_FILENO))
-		write(STDOUT_FILENO, "$", 1);
+		write(STDOUT_FILENO, "$", 2);
 
 	fgets(input, MAX_INPUT_LENGTH, stdin);
 
